@@ -1,16 +1,30 @@
 from pathlib import Path
-from typing import Iterator, List, Tuple
+from typing import Dict, Iterator, List, Tuple
 
-from tree_sitter import Language, Parser  # type: ignore
+import tree_sitter  # type: ignore
+from tree_sitter import Language, Parser
 
+# build tree sitter for python grammar
 Language.build_library("build/my-languages.so", ["tree-sitter-python"])
 PY_LANGUAGE = Language("build/my-languages.so", "python")
 
+# configure parser
 parser = Parser()
 parser.set_language(PY_LANGUAGE)
 
 
-def traverse_tree(tree, func_lines) -> Iterator[Tuple[int, bytes]]:
+def traverse_tree(
+    tree: tree_sitter.Tree, func_lines: Dict[int, str]
+) -> Iterator[Tuple[int, bytes]]:
+    """Iterates tree_sitter tree and extracts text of all needed functions
+
+    Args:
+        tree: tree_sitter AST
+        func_lines: Mapping <start line of function in file: function name>
+
+    Yields:
+        Iterator via tuples with start line of function and its text
+    """
     cursor = tree.walk()
 
     reached_root = False
@@ -38,9 +52,19 @@ def traverse_tree(tree, func_lines) -> Iterator[Tuple[int, bytes]]:
 
 
 def extract_functions_from_file(
-    path_to_file: Path, functions: List[int]
+    path_to_file: Path, functions: Dict[int, str]
 ) -> Iterator[Tuple[int, bytes]]:
+    """Extracts all needed functions from file
+
+    Args:
+        path_to_file: Path to file
+        functions:  Mapping <start line of function in file: function name>
+
+    Yields:
+        Iterator via tuples with start line of function and its text
+    """
     with open(path_to_file, "rb") as r_file:
         tree = parser.parse(r_file.read())
+
     for node in traverse_tree(tree, functions):
         yield node
