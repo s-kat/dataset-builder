@@ -1,3 +1,6 @@
 __pycache__/
 *.py[cod]
 .mypy_cache/
+.*so
+build/
+debug.log

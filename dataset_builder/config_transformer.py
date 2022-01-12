@@ -6,6 +6,8 @@ from dataset_builder.constants import ToxConfig
 
 
 class ConfigTransformer:
+    """Transforms tox.ini config for tracing functions"""
+
     def __init__(self, path_to_config: Path) -> None:
         self.path_to_config = path_to_config
         self.config = configparser.ConfigParser()
@@ -14,6 +16,14 @@ class ConfigTransformer:
         self.sections_with_pytest = 0
 
     def set_tracer(self, section: str) -> Optional[str]:
+        """Tries to find pytest in config section, in case of success adds viztracer command and dependency
+
+        Args:
+            section: config section name
+
+        Returns:
+            Name of file with results of tracing, or None
+        """
         section_commands = self.config[section].get("commands", "")
         res_file = None
 
@@ -39,6 +49,12 @@ class ConfigTransformer:
         return res_file
 
     def transform_tox(self) -> List[Path]:
+        """Transforms tox.ini config for tracing functions
+
+        Returns:
+            List with files with results of tracing function
+
+        """
         for section in self.config.sections():
             out_fname = self.set_tracer(section)
             if out_fname is not None:
@@ -48,5 +64,6 @@ class ConfigTransformer:
         return self.results
 
     def save_config(self) -> None:
+        """Saves transformed config"""
         with open(self.path_to_config, "w") as config_file:
             self.config.write(config_file)
