@@ -18,17 +18,17 @@ if __name__ == "__main__":
     path = args.path
 
     log.info(f"Transform tox.ini config")
-    sections_count = ConfigTransformer(Path(f"{path}/tox.ini")).transform_tox()
+    tracing_results_path = ConfigTransformer(Path(f"{path}/tox.ini")).transform_tox()
 
     log.info(f"Run tox")
     subprocess.run(f"cd {Path(path)} && tox -e {args.e}", shell=True)
 
     log.info(f"Extract all functions with arguments and output")
-    parser = FunctionsInfo(
-        path_to_file=Path(f"{path}/result0.json"),
-        path_to_repo=Path(f"{path}"),
-    )
-    parser.extract_functions()
-
-    log.info(f"Dump result to {args.output}")
-    parser.dump_function(Path(args.output))
+    for i, res_path in enumerate(tracing_results_path):
+        parser = FunctionsInfo(
+            path_to_file=res_path,
+            path_to_repo=Path(path),
+        )
+        parser.extract_functions()
+        log.info(f"Dump result to res{i}.json")
+        parser.dump_function(Path(f'res{i}.json'))
