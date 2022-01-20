@@ -21,14 +21,23 @@ if __name__ == "__main__":
     tracing_results_path = ConfigTransformer(Path(f"{path}/tox.ini")).transform_tox()
 
     log.info(f"Run tox")
-    subprocess.run(f"cd {Path(path)} && tox -e {args.e}", shell=True)
+
+    if args.e is not None:
+        tox_command = f"tox -e {args.e}"
+    else:
+        tox_command = "tox"
+
+    subprocess.run(f"cd {Path(path)} && {tox_command}", shell=True)
 
     log.info(f"Extract all functions with arguments and output")
     for i, res_path in enumerate(tracing_results_path):
-        parser = FunctionsInfo(
-            path_to_file=res_path,
-            path_to_repo=Path(path),
-        )
-        parser.extract_functions()
-        log.info(f"Dump result to res{i}.json")
-        parser.dump_function(Path(f'res{i}.json'))
+        if Path(res_path).is_file():
+            parser = FunctionsInfo(
+                path_to_file=res_path,
+                path_to_repo=Path(path),
+            )
+            parser.extract_functions()
+            log.info("filter functions")
+            parser.filter_functions()
+            log.info(f"Dump result to {path}_res{i}.json")
+            parser.dump_function(Path(f"result/{Path(path).name}_res{i}.json"))
