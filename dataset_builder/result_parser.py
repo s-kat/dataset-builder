@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from dataset_builder.extract_functions import extract_functions_from_file
+from dataset_builder.filtering import filter_functions
 
 
 class FunctionsInfo:
@@ -46,6 +47,13 @@ class FunctionsInfo:
 
         self.total_functions = total_functions
         self.get_functions_text()
+
+    def filter_functions(self) -> None:
+        """Filters all functions:
+        - check arguments
+        - check return value
+        """
+        self.total_functions = filter_functions(self.total_functions)
 
     def dump_function(self, out_fname: Path) -> None:
         """Saves all functions to outfile

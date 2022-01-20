@@ -28,7 +28,8 @@ class ConfigTransformer:
         res_file = None
 
         # try to find pytest
-        inj_ind = section_commands.find("pytest")
+        inj_ind = max(section_commands.find("py.test"), section_commands.find("pytest"))
+
         if inj_ind != -1:
             res_file = f"result{self.sections_with_pytest}.json"
 
