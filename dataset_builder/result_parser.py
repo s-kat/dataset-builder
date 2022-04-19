@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from dataset_builder.extract_functions import extract_functions_from_file
+from dataset_builder.extract_imports import extract_imports_from_file
 from dataset_builder.filtering import filter_functions
 
 
@@ -20,13 +21,18 @@ class FunctionsInfo:
             self.trace = self.info.get("traceEvents", [])
             self.func_names = self.info["file_info"].get("functions", {}).keys()
 
-    def get_functions_text(self):
-        """Gets functions name by path_to_file and start line of each function"""
+    def get_functions_text_and_imports(self):
+        """Gets functions text by path_to_file and start line of each function.
+        Gets all imports from each file
+        """
         for path_to_file, functions in self.total_functions.items():
+            cur_imports = extract_imports_from_file(path_to_file)
+
             for name, text in extract_functions_from_file(
                 path_to_file, {functions[i]["line"]: i for i in functions}
             ):
                 functions[name]["text"] = text.decode("utf-8")
+                functions[name]["imports"] = cur_imports
 
     def extract_functions(self) -> None:
         """Extracts functions with their text from viztracer log"""
@@ -46,7 +52,7 @@ class FunctionsInfo:
                 total_functions[file_path][name]["args"].append(event.get("args", {}))
 
         self.total_functions = total_functions
-        self.get_functions_text()
+        self.get_functions_text_and_imports()
 
     def filter_functions(self) -> None:
         """Filters all functions:

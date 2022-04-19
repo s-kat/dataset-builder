@@ -2,3 +2,4 @@ viztracer
 pytest
 tox
 tree_sitter
+stdlib_list
