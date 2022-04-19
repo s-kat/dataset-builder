@@ -6,3 +6,4 @@ build/
 debug.log
 .ipynb_checkpoints
 .DS_Store
+results/

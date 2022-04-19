@@ -39,5 +39,5 @@ if __name__ == "__main__":
             parser.extract_functions()
             log.info("filter functions")
             parser.filter_functions()
-            log.info(f"Dump result to {path}_res{i}.json")
-            parser.dump_function(Path(f"result/{Path(path).name}_res{i}.json"))
+            log.info(f"Dump result to results/{Path(path).name}_res{i}.json")
+            parser.dump_function(Path(f"docker_volume/docker_results/{Path(path).name}_res{i}.json"))
