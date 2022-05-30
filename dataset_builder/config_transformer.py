@@ -45,7 +45,7 @@ class ConfigTransformer:
 
             # add viztracer to deps
             self.config[section].setdefault("deps", "")
-            self.config[section]["deps"] += "\nviztracer "
+            self.config[section]["deps"] += "\ngit+https://github.com/s-kat/viztracer.git "
 
         return res_file
 
