@@ -1,4 +1,4 @@
-viztracer
+git+https://github.com/s-kat/viztracer.git
 pytest
 tox
 tree_sitter

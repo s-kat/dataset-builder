@@ -51,15 +51,33 @@ def filter_args(arg_ret_list, imports):
     return True
 
 
-def filter_functions(total_functions):
+def plain_filter_args(arg_ret_list):
+    for cur_args_ret in arg_ret_list:
+        # check if class method
+        if cur_args_ret["func_args"] == {}:
+            return False
+
+        if "self" in cur_args_ret["func_args"].keys():
+            return False
+
+    return True
+
+
+def filter_functions(total_functions, filtering_type='plain'):
     # total functions
     funcs = {}
 
     for cur_funcs in total_functions.values():
         for func_name in cur_funcs:
-            if filter_args(
-                cur_funcs[func_name]["args"], cur_funcs[func_name].get("imports", [])
-            ):
-                funcs[func_name] = cur_funcs[func_name]
+            if filtering_type == 'plain':
+                if plain_filter_args(
+                        cur_funcs[func_name]["args"]
+                ):
+                    funcs[func_name] = cur_funcs[func_name]
+            else:
+                if filter_args(
+                    cur_funcs[func_name]["args"], cur_funcs[func_name].get("imports", [])
+                ):
+                    funcs[func_name] = cur_funcs[func_name]
     log.info(f"Extract {len(funcs)} functions")
     return funcs
